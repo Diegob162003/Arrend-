@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sin conexión | Arrendú</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f3f6f3;
+        --fg: #17211d;
+        --primary: #0f4c3a;
+        --muted: #4f5e57;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0e1613;
+          --fg: #e7eeea;
+          --primary: #7fd1ae;
+          --muted: #a5b5ad;
+        }
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          17px/1.55 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 26rem;
+      }
+      p.marca {
+        color: var(--primary);
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin: 0 0 2rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 0.5rem;
+      }
+      p {
+        color: var(--muted);
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="marca">Arrendú</p>
+      <h1>No hay conexión</h1>
+      <p>Revisa tu señal o el wifi. Cuando vuelva, recarga la página y sigues donde ibas.</p>
+    </main>
+  </body>
+</html>

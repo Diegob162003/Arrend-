@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arrendú
 
-## Getting Started
+Herramienta web para que el propietario pequeño (1 a 5 inmuebles) administre sus arriendos sin inmobiliaria, y para que el inquilino construya un historial de buen pagador con referencias verificables.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, Server Actions, `proxy.ts`) + React 19 + TypeScript estricto
+- **Tailwind CSS 4** + shadcn/ui (Base UI)
+- **Supabase**: Postgres con Row Level Security, Auth (código por correo y Google) y Storage
+- **Zod** + react-hook-form para validar en el navegador y en el servidor
+- **Cloudflare Turnstile** contra bots en el ingreso
+- **Sentry** (errores) y **PostHog** (métricas del piloto), apagados si no hay llaves
+- **Vitest**, **pgTAP** (políticas RLS) y **Playwright** (E2E en celular)
+
+## Requisitos
+
+- Node.js 22 o superior
+- Docker Desktop encendido (para Supabase local)
+
+## Puesta en marcha
+
+```bash
+npm install
+cp supabase/.env.example supabase/.env
+npm run db:start
+cp .env.example .env.local
+```
+
+Copia en `.env.local` la `Publishable key` que muestra `npx supabase status`. Luego:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- App: http://localhost:3000
+- Correos de prueba (aquí llega el código de ingreso): http://127.0.0.1:54324
+- Panel de la base de datos: http://127.0.0.1:54323
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Comandos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Comando             | Qué hace                                   |
+| ------------------- | ------------------------------------------ |
+| `npm run dev`       | Servidor de desarrollo                     |
+| `npm run lint`      | ESLint                                     |
+| `npm run typecheck` | Tipos de rutas + TypeScript                |
+| `npm test`          | Pruebas unitarias (Vitest)                 |
+| `npm run db:test`   | Pruebas de políticas RLS (pgTAP)           |
+| `npm run test:e2e`  | Flujo completo en el build de producción   |
+| `npm run db:reset`  | Recrea la base local desde las migraciones |
+| `npm run db:types`  | Regenera `src/lib/database.types.ts`       |
+| `npm run format`    | Formatea con Prettier                      |
 
-## Learn More
+## Seguridad
 
-To learn more about Next.js, take a look at the following resources:
+- **RLS en todas las tablas.** Cada persona solo ve sus propias filas, aunque haya un error en el código. Una prueba falla si alguna tabla de `public` queda sin RLS.
+- **CSP con nonce por petición** (`src/proxy.ts`), HSTS, `X-Frame-Options: DENY` y `Permissions-Policy`.
+- **Sin contraseñas**: código de 6 dígitos por correo (vence en 15 minutos), con Turnstile y límites de envío.
+- Las Server Actions verifican la sesión por su cuenta y validan con Zod.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Para producción (pendiente)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Crear el proyecto en Supabase (región São Paulo) y aplicar las migraciones con `npx supabase db push`.
+2. Configurar un SMTP propio en Supabase (por ejemplo Resend): el correo incluido tiene un límite muy bajo.
+3. Crear las llaves reales de Cloudflare Turnstile y poner la secreta en Supabase (Auth > Bot protection).
+4. Desplegar en Netlify con las variables de `.env.example`.
+5. Opcional: credenciales de Google, Sentry y PostHog.

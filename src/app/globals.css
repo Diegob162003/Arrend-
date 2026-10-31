@@ -1,26 +1,145 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* El modo oscuro sigue la preferencia del sistema. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-atkinson);
+  --font-heading: var(--font-bricolage);
+  --color-sello: var(--sello);
+  --color-sello-foreground: var(--sello-foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+/*
+  Paleta de Arrendú:
+  papel frío #F3F6F3 · tinta #17211D · verde tinta #0F4C3A
+  gris hoja #5B6B63 · línea #D6DED8 · sello amarillo #F2C230 (solo en el sello)
+*/
+:root {
+  --background: #f3f6f3;
+  --foreground: #17211d;
+  --card: #ffffff;
+  --card-foreground: #17211d;
+  --popover: #ffffff;
+  --popover-foreground: #17211d;
+  --primary: #0f4c3a;
+  --primary-foreground: #f3f6f3;
+  --secondary: #e3ebe5;
+  --secondary-foreground: #17211d;
+  --muted: #e3ebe5;
+  --muted-foreground: #4f5e57;
+  --accent: #dbe7df;
+  --accent-foreground: #0f4c3a;
+  --destructive: #b42318;
+  --border: #d6ded8;
+  --input: #b9c6bd;
+  --ring: #0f4c3a;
+  --sello: #f2c230;
+  --sello-foreground: #3d2f00;
+  --radius: 0.625rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0e1613;
+    --foreground: #e7eeea;
+    --card: #15211c;
+    --card-foreground: #e7eeea;
+    --popover: #15211c;
+    --popover-foreground: #e7eeea;
+    --primary: #7fd1ae;
+    --primary-foreground: #0b2a20;
+    --secondary: #1d2b25;
+    --secondary-foreground: #e7eeea;
+    --muted: #1d2b25;
+    --muted-foreground: #a5b5ad;
+    --accent: #1f3a2f;
+    --accent-foreground: #b9ecd4;
+    --destructive: #f97066;
+    --border: #2a3a33;
+    --input: #3a4c44;
+    --ring: #7fd1ae;
+    --sello: #f2c230;
+    --sello-foreground: #3d2f00;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-bricolage);
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Borde dentado del recibo: el papel cortado del talonario. */
+.recibo-borde {
+  --diente: 10px;
+  mask:
+    radial-gradient(circle at 50% 0, #0000 calc(var(--diente) / 2), #000 calc(var(--diente) / 2 + 0.5px))
+      top / var(--diente) 51% repeat-x,
+    linear-gradient(#000 0 0) bottom / 100% 50% no-repeat;
+}
+
+@keyframes sello-cae {
+  from {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1.25);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+}
+
+.sello {
+  transform: rotate(-8deg);
+  animation: sello-cae 320ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 500ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sello {
+    animation: none;
+  }
 }
