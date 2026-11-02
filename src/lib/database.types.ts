@@ -71,14 +71,14 @@ isOneToOne: false
                   ]
                 },"contratos": {
                   Row: {
-                    "actualizado_en": string,"arrendador_id": string,"canon": number,"creado_en": string,"dia_pago": number,"estado": Database["public"]['Enums']["estado_contrato"],"fecha_fin": string,"fecha_inicio": string,"firmado_path": string | null,"garantia_tipo": Database["public"]['Enums']["garantia_tipo"] | null,"id": string,"inmueble_id": string,"inquilino_id": string | null,"pdf_path": string | null
+                    "actualizado_en": string,"arrendador_id": string,"canon": number,"clausulas_adicionales": string | null,"creado_en": string,"dia_pago": number,"estado": Database["public"]['Enums']["estado_contrato"],"fecha_fin": string,"fecha_inicio": string,"firmado_path": string | null,"garantia_tipo": Database["public"]['Enums']["garantia_tipo"] | null,"id": string,"inmueble_id": string,"inquilino_correo": string | null,"inquilino_id": string | null,"inquilino_nombre": string | null,"pdf_path": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "actualizado_en"?: string,"arrendador_id"?: string,"canon": number,"creado_en"?: string,"dia_pago": number,"estado"?: Database["public"]['Enums']["estado_contrato"],"fecha_fin": string,"fecha_inicio": string,"firmado_path"?: string | null,"garantia_tipo"?: Database["public"]['Enums']["garantia_tipo"] | null,"id"?: string,"inmueble_id": string,"inquilino_id"?: string | null,"pdf_path"?: string | null
+                    "actualizado_en"?: string,"arrendador_id"?: string,"canon": number,"clausulas_adicionales"?: string | null,"creado_en"?: string,"dia_pago": number,"estado"?: Database["public"]['Enums']["estado_contrato"],"fecha_fin": string,"fecha_inicio": string,"firmado_path"?: string | null,"garantia_tipo"?: Database["public"]['Enums']["garantia_tipo"] | null,"id"?: string,"inmueble_id": string,"inquilino_correo"?: string | null,"inquilino_id"?: string | null,"inquilino_nombre"?: string | null,"pdf_path"?: string | null
                   }
                   Update: {
-                    "actualizado_en"?: string,"arrendador_id"?: string,"canon"?: number,"creado_en"?: string,"dia_pago"?: number,"estado"?: Database["public"]['Enums']["estado_contrato"],"fecha_fin"?: string,"fecha_inicio"?: string,"firmado_path"?: string | null,"garantia_tipo"?: Database["public"]['Enums']["garantia_tipo"] | null,"id"?: string,"inmueble_id"?: string,"inquilino_id"?: string | null,"pdf_path"?: string | null
+                    "actualizado_en"?: string,"arrendador_id"?: string,"canon"?: number,"clausulas_adicionales"?: string | null,"creado_en"?: string,"dia_pago"?: number,"estado"?: Database["public"]['Enums']["estado_contrato"],"fecha_fin"?: string,"fecha_inicio"?: string,"firmado_path"?: string | null,"garantia_tipo"?: Database["public"]['Enums']["garantia_tipo"] | null,"id"?: string,"inmueble_id"?: string,"inquilino_correo"?: string | null,"inquilino_id"?: string | null,"inquilino_nombre"?: string | null,"pdf_path"?: string | null
                   }
                   Relationships: [
                     {

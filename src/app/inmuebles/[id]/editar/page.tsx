@@ -6,7 +6,7 @@ import { getUsuario } from "@/lib/auth";
 import { getInmueble } from "@/lib/inmuebles";
 import { borrarInmueble, editarInmueble } from "../../actions";
 import { FormularioInmueble } from "../../formulario-inmueble";
-import { BorrarInmueble } from "./borrar-inmueble";
+import { ConfirmarBorrado } from "@/components/confirmar-borrado";
 
 export const metadata: Metadata = {
   title: "Editar inmueble",
@@ -57,7 +57,7 @@ export default async function EditarInmueble({ params }: PageProps<"/inmuebles/[
               <p className="mt-1 mb-4 text-muted-foreground">
                 Se borran también sus fotos. No se puede deshacer.
               </p>
-              <BorrarInmueble accion={borrarInmueble.bind(null, inmueble.id)} />
+              <ConfirmarBorrado accion={borrarInmueble.bind(null, inmueble.id)} texto="Borrar inmueble" />
             </>
           )}
         </section>

@@ -49,18 +49,18 @@ insert into public.inmuebles (id, arrendador_id, direccion, ciudad, tipo, canon_
    'Calle 10 # 40-20, apto 301', 'Medellín', 'apartaestudio', 1300000);
 
 insert into public.contratos
-  (id, inmueble_id, arrendador_id, inquilino_id, fecha_inicio, fecha_fin, canon, dia_pago, garantia_tipo, estado)
+  (id, inmueble_id, arrendador_id, inquilino_id, inquilino_nombre, inquilino_correo, fecha_inicio, fecha_fin, canon, dia_pago, garantia_tipo, estado)
 values
   ('20000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000001',
    'a0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000002',
-   '2026-08-01', '2027-07-31', 1800000, 5, 'codeudor', 'activo'),
+   'Beto Gómez', 'beto@prueba.co', '2026-08-01', '2027-07-31', 1800000, 5, 'codeudor', 'activo'),
   ('20000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000003',
    'c0000000-0000-4000-8000-000000000003', 'd0000000-0000-4000-8000-000000000004',
-   '2026-09-01', '2027-08-31', 1300000, 1, 'poliza', 'activo'),
+   'Dani Torres', 'dani@prueba.co', '2026-09-01', '2027-08-31', 1300000, 1, 'poliza', 'activo'),
   -- Borrador de Ana todavía sin inquilino.
   ('20000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000002',
    'a0000000-0000-4000-8000-000000000001', null,
-   '2026-12-01', '2027-11-30', 1200000, 10, 'servicios_publicos', 'borrador');
+   'Laura Martínez', null, '2026-12-01', '2027-11-30', 1200000, 10, 'servicios_publicos', 'borrador');
 
 insert into public.pagos
   (contrato_id, periodo, valor, fecha_limite, fecha_pago, estado, confirmado_en, extraido_ia)

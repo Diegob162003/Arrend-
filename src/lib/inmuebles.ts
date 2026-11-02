@@ -26,7 +26,9 @@ export async function getInmueble(id: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("inmuebles")
-    .select("id, arrendador_id, direccion, ciudad, tipo, canon_base, notas, contratos (id, estado)")
+    .select(
+      "id, arrendador_id, direccion, ciudad, tipo, canon_base, notas, contratos (id, estado, inquilino_nombre, fecha_inicio, fecha_fin)",
+    )
     .eq("id", id)
     .maybeSingle();
 

@@ -86,8 +86,28 @@ test("una persona nueva crea su cuenta con el código del correo", async ({ page
     .setInputFiles({ name: "sala.png", mimeType: "image/png", buffer: PNG });
   await expect(page.getByRole("img", { name: "Foto 1 del inmueble" })).toBeVisible();
 
+  // Arma el contrato en tres pasos; la ley no deja pactar depósito.
+  await page.getByRole("link", { name: "Crear contrato" }).click();
+  await page.getByLabel("Nombre completo").fill("Beto Gómez");
+  await page.getByRole("button", { name: "Guardar y seguir" }).click();
+
+  await expect(page.getByText("¿Y el depósito?")).toBeVisible();
+  await page.getByText("Codeudor", { exact: true }).click();
+  await page.getByRole("button", { name: "Guardar y seguir" }).click();
+
+  await page.getByLabel("Acuerdos adicionales (opcional)").fill("Deja un depósito de un mes.");
+  await expect(page.getByText(/no se puede pedir depósito en dinero/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardar contrato" })).toBeDisabled();
+
+  await page.getByLabel("Acuerdos adicionales (opcional)").fill("Se permite una mascota pequeña.");
+  await page.getByRole("button", { name: "Guardar contrato" }).click();
+  await expect(page.getByRole("heading", { name: "Contrato con Beto" })).toBeVisible();
+  await expect(page.getByText("UN MILLÓN OCHOCIENTOS MIL PESOS", { exact: false })).toBeVisible();
+  await expect(page.getByText("Se permite una mascota pequeña.")).toBeVisible();
+
+  await page.getByRole("link", { name: "Calle 57 # 9-30" }).click();
   await page.getByRole("link", { name: "Tus inmuebles" }).click();
-  await expect(page.getByText("Disponible")).toBeVisible();
+  await expect(page.getByText("Contrato en borrador")).toBeVisible();
 
   await page.getByRole("button", { name: "Cerrar sesión" }).click();
   await expect(page).toHaveURL("/");

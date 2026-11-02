@@ -2,9 +2,17 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import type { EstadoBorrado } from "../../actions";
 
-export function BorrarInmueble({ accion }: { accion: () => Promise<EstadoBorrado> }) {
+/** Botón de borrar que pide confirmación en el mismo lugar antes de actuar. */
+export function ConfirmarBorrado({
+  accion,
+  texto,
+  pregunta = "¿Seguro que quieres borrarlo?",
+}: {
+  accion: () => Promise<{ error?: string }>;
+  texto: string;
+  pregunta?: string;
+}) {
   const [confirmando, setConfirmando] = useState(false);
   const [error, setError] = useState<string>();
   const [borrando, iniciar] = useTransition();
@@ -17,14 +25,14 @@ export function BorrarInmueble({ accion }: { accion: () => Promise<EstadoBorrado
         className="h-11 px-5 text-base"
         onClick={() => setConfirmando(true)}
       >
-        Borrar inmueble
+        {texto}
       </Button>
     );
   }
 
   return (
     <div className="space-y-3" role="group" aria-label="Confirmar borrado">
-      <p className="font-medium">¿Seguro que quieres borrarlo?</p>
+      <p className="font-medium">{pregunta}</p>
       <div className="flex flex-wrap gap-3">
         <Button
           variant="destructive"
