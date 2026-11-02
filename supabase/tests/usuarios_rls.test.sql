@@ -13,8 +13,8 @@ select is_empty(
 
 -- Dos cuentas de prueba; el disparador les crea su fila en usuarios.
 insert into auth.users (id, email) values
-  ('11111111-1111-1111-1111-111111111111', 'ana@prueba.co'),
-  ('22222222-2222-2222-2222-222222222222', 'beto@prueba.co');
+  ('11111111-1111-1111-1111-111111111111', 'ana.u@prueba.co'),
+  ('22222222-2222-2222-2222-222222222222', 'beto.u@prueba.co');
 
 select is(
   (select count(*)::int from public.usuarios

@@ -36,6 +36,15 @@ npm run dev
 - Correos de prueba (aquí llega el código de ingreso): http://127.0.0.1:54324
 - Panel de la base de datos: http://127.0.0.1:54323
 
+La base local trae datos de prueba (`supabase/seed.sql`). Se entra con el código que llega al correo de prueba:
+
+| Cuenta            | Papel                                                    |
+| ----------------- | -------------------------------------------------------- |
+| `ana@prueba.co`   | Arrendadora con dos inmuebles, un contrato y un borrador |
+| `beto@prueba.co`  | Inquilino de Ana, con pagos, acta, referencia y perfil   |
+| `carla@prueba.co` | Arrendadora con su propio inmueble                       |
+| `dani@prueba.co`  | Inquilina de Carla                                       |
+
 ## Comandos
 
 | Comando             | Qué hace                                   |
@@ -52,7 +61,9 @@ npm run dev
 
 ## Seguridad
 
-- **RLS en todas las tablas.** Cada persona solo ve sus propias filas, aunque haya un error en el código. Una prueba falla si alguna tabla de `public` queda sin RLS.
+- **RLS en todas las tablas.** Cada persona solo ve sus propias filas, aunque haya un error en el código. Una prueba falla si alguna tabla de `public` queda sin RLS o sin políticas, y las pruebas pgTAP comprueban que nadie lee ni modifica filas ajenas.
+- **Reglas que viven en la base de datos:** el contrato no admite depósito en dinero (Ley 820, art. 16), el inquilino solo reporta pagos y el arrendador los confirma, un pago confirmado ya no cambia y un acta aceptada por ambas partes queda bloqueada.
+- **Tokens guardados como hash** (SHA-256) en referencias y perfiles compartidos.
 - **CSP con nonce por petición** (`src/proxy.ts`), HSTS, `X-Frame-Options: DENY` y `Permissions-Policy`.
 - **Sin contraseñas**: código de 6 dígitos por correo (vence en 15 minutos), con Turnstile y límites de envío.
 - Las Server Actions verifican la sesión por su cuenta y validan con Zod.

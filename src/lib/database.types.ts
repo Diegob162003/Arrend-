@@ -23,7 +23,211 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "usuarios": {
+            "accesos_perfil": {
+                  Row: {
+                    "abierto_en": string,"id": number,"ip_hash": string | null,"perfil_compartido_id": string,"user_agent": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "abierto_en"?: string,"id"?: never,"ip_hash"?: string | null,"perfil_compartido_id": string,"user_agent"?: string | null
+                  }
+                  Update: {
+                    "abierto_en"?: string,"id"?: never,"ip_hash"?: string | null,"perfil_compartido_id"?: string,"user_agent"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "accesos_perfil_perfil_compartido_id_fkey"
+      columns: ["perfil_compartido_id"]
+isOneToOne: false
+      referencedRelation: "perfiles_compartidos"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"arriendos_anteriores": {
+                  Row: {
+                    "actualizado_en": string,"ciudad": string,"contrato_id": string | null,"creado_en": string,"desde": string,"direccion": string,"hasta": string | null,"id": string,"inquilino_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "actualizado_en"?: string,"ciudad": string,"contrato_id"?: string | null,"creado_en"?: string,"desde": string,"direccion": string,"hasta"?: string | null,"id"?: string,"inquilino_id"?: string
+                  }
+                  Update: {
+                    "actualizado_en"?: string,"ciudad"?: string,"contrato_id"?: string | null,"creado_en"?: string,"desde"?: string,"direccion"?: string,"hasta"?: string | null,"id"?: string,"inquilino_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "arriendos_anteriores_contrato_id_fkey"
+      columns: ["contrato_id"]
+isOneToOne: false
+      referencedRelation: "contratos"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "arriendos_anteriores_inquilino_id_fkey"
+      columns: ["inquilino_id"]
+isOneToOne: false
+      referencedRelation: "usuarios"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"contratos": {
+                  Row: {
+                    "actualizado_en": string,"arrendador_id": string,"canon": number,"creado_en": string,"dia_pago": number,"estado": Database["public"]['Enums']["estado_contrato"],"fecha_fin": string,"fecha_inicio": string,"firmado_path": string | null,"garantia_tipo": Database["public"]['Enums']["garantia_tipo"] | null,"id": string,"inmueble_id": string,"inquilino_id": string | null,"pdf_path": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "actualizado_en"?: string,"arrendador_id"?: string,"canon": number,"creado_en"?: string,"dia_pago": number,"estado"?: Database["public"]['Enums']["estado_contrato"],"fecha_fin": string,"fecha_inicio": string,"firmado_path"?: string | null,"garantia_tipo"?: Database["public"]['Enums']["garantia_tipo"] | null,"id"?: string,"inmueble_id": string,"inquilino_id"?: string | null,"pdf_path"?: string | null
+                  }
+                  Update: {
+                    "actualizado_en"?: string,"arrendador_id"?: string,"canon"?: number,"creado_en"?: string,"dia_pago"?: number,"estado"?: Database["public"]['Enums']["estado_contrato"],"fecha_fin"?: string,"fecha_inicio"?: string,"firmado_path"?: string | null,"garantia_tipo"?: Database["public"]['Enums']["garantia_tipo"] | null,"id"?: string,"inmueble_id"?: string,"inquilino_id"?: string | null,"pdf_path"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "contratos_arrendador_id_fkey"
+      columns: ["arrendador_id"]
+isOneToOne: false
+      referencedRelation: "usuarios"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "contratos_inmueble_id_fkey"
+      columns: ["inmueble_id"]
+isOneToOne: false
+      referencedRelation: "inmuebles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "contratos_inquilino_id_fkey"
+      columns: ["inquilino_id"]
+isOneToOne: false
+      referencedRelation: "usuarios"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"inmuebles": {
+                  Row: {
+                    "actualizado_en": string,"arrendador_id": string,"canon_base": number,"ciudad": string,"creado_en": string,"direccion": string,"id": string,"notas": string | null,"tipo": Database["public"]['Enums']["tipo_inmueble"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "actualizado_en"?: string,"arrendador_id"?: string,"canon_base": number,"ciudad": string,"creado_en"?: string,"direccion": string,"id"?: string,"notas"?: string | null,"tipo": Database["public"]['Enums']["tipo_inmueble"]
+                  }
+                  Update: {
+                    "actualizado_en"?: string,"arrendador_id"?: string,"canon_base"?: number,"ciudad"?: string,"creado_en"?: string,"direccion"?: string,"id"?: string,"notas"?: string | null,"tipo"?: Database["public"]['Enums']["tipo_inmueble"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "inmuebles_arrendador_id_fkey"
+      columns: ["arrendador_id"]
+isOneToOne: false
+      referencedRelation: "usuarios"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"inventarios": {
+                  Row: {
+                    "aceptado_arrendador_en": string | null,"aceptado_inquilino_en": string | null,"actualizado_en": string,"contrato_id": string,"creado_en": string,"id": string,"tipo": Database["public"]['Enums']["tipo_inventario"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "aceptado_arrendador_en"?: string | null,"aceptado_inquilino_en"?: string | null,"actualizado_en"?: string,"contrato_id": string,"creado_en"?: string,"id"?: string,"tipo": Database["public"]['Enums']["tipo_inventario"]
+                  }
+                  Update: {
+                    "aceptado_arrendador_en"?: string | null,"aceptado_inquilino_en"?: string | null,"actualizado_en"?: string,"contrato_id"?: string,"creado_en"?: string,"id"?: string,"tipo"?: Database["public"]['Enums']["tipo_inventario"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "inventarios_contrato_id_fkey"
+      columns: ["contrato_id"]
+isOneToOne: false
+      referencedRelation: "contratos"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"items_inventario": {
+                  Row: {
+                    "actualizado_en": string,"ambiente": string,"creado_en": string,"creado_por": string,"descripcion": string,"foto_hash": string | null,"foto_path": string | null,"foto_tomada_en": string | null,"id": string,"inventario_id": string,"orden": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "actualizado_en"?: string,"ambiente": string,"creado_en"?: string,"creado_por"?: string,"descripcion": string,"foto_hash"?: string | null,"foto_path"?: string | null,"foto_tomada_en"?: string | null,"id"?: string,"inventario_id": string,"orden"?: number
+                  }
+                  Update: {
+                    "actualizado_en"?: string,"ambiente"?: string,"creado_en"?: string,"creado_por"?: string,"descripcion"?: string,"foto_hash"?: string | null,"foto_path"?: string | null,"foto_tomada_en"?: string | null,"id"?: string,"inventario_id"?: string,"orden"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "items_inventario_creado_por_fkey"
+      columns: ["creado_por"]
+isOneToOne: false
+      referencedRelation: "usuarios"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "items_inventario_inventario_id_fkey"
+      columns: ["inventario_id"]
+isOneToOne: false
+      referencedRelation: "inventarios"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"pagos": {
+                  Row: {
+                    "actualizado_en": string,"comprobante_path": string | null,"confirmado_en": string | null,"contrato_id": string,"creado_en": string,"estado": Database["public"]['Enums']["estado_pago"],"extraido_ia": Json | null,"fecha_limite": string,"fecha_pago": string | null,"id": string,"periodo": string,"valor": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "actualizado_en"?: string,"comprobante_path"?: string | null,"confirmado_en"?: string | null,"contrato_id": string,"creado_en"?: string,"estado"?: Database["public"]['Enums']["estado_pago"],"extraido_ia"?: Json | null,"fecha_limite": string,"fecha_pago"?: string | null,"id"?: string,"periodo": string,"valor": number
+                  }
+                  Update: {
+                    "actualizado_en"?: string,"comprobante_path"?: string | null,"confirmado_en"?: string | null,"contrato_id"?: string,"creado_en"?: string,"estado"?: Database["public"]['Enums']["estado_pago"],"extraido_ia"?: Json | null,"fecha_limite"?: string,"fecha_pago"?: string | null,"id"?: string,"periodo"?: string,"valor"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "pagos_contrato_id_fkey"
+      columns: ["contrato_id"]
+isOneToOne: false
+      referencedRelation: "contratos"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"perfiles_compartidos": {
+                  Row: {
+                    "abierto_en": string | null,"actualizado_en": string,"creado_en": string,"destinatario": string,"id": string,"inquilino_id": string,"revocado_en": string | null,"token_hash": string,"vence_en": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "abierto_en"?: string | null,"actualizado_en"?: string,"creado_en"?: string,"destinatario": string,"id"?: string,"inquilino_id"?: string,"revocado_en"?: string | null,"token_hash": string,"vence_en": string
+                  }
+                  Update: {
+                    "abierto_en"?: string | null,"actualizado_en"?: string,"creado_en"?: string,"destinatario"?: string,"id"?: string,"inquilino_id"?: string,"revocado_en"?: string | null,"token_hash"?: string,"vence_en"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "perfiles_compartidos_inquilino_id_fkey"
+      columns: ["inquilino_id"]
+isOneToOne: false
+      referencedRelation: "usuarios"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"referencias": {
+                  Row: {
+                    "acepta_contacto": boolean | null,"actualizado_en": string,"arriendo_anterior_id": string,"autorizo_datos_en": string | null,"canal": Database["public"]['Enums']["canal_referencia"],"canal_contacto": Database["public"]['Enums']["canal_contacto"] | null,"comentario": string | null,"contacto": string,"contacto_nombre": string,"creado_en": string,"entrego_buen_estado": boolean | null,"id": string,"nivel": Database["public"]['Enums']["nivel_referencia"] | null,"oculta": boolean,"pagaba_a_tiempo": boolean | null,"respondida_en": string | null,"soporte_path": string | null,"token_hash": string,"vence_en": string,"volveria_a_arrendar": boolean | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "acepta_contacto"?: boolean | null,"actualizado_en"?: string,"arriendo_anterior_id": string,"autorizo_datos_en"?: string | null,"canal": Database["public"]['Enums']["canal_referencia"],"canal_contacto"?: Database["public"]['Enums']["canal_contacto"] | null,"comentario"?: string | null,"contacto": string,"contacto_nombre": string,"creado_en"?: string,"entrego_buen_estado"?: boolean | null,"id"?: string,"nivel"?: Database["public"]['Enums']["nivel_referencia"] | null,"oculta"?: boolean,"pagaba_a_tiempo"?: boolean | null,"respondida_en"?: string | null,"soporte_path"?: string | null,"token_hash": string,"vence_en": string,"volveria_a_arrendar"?: boolean | null
+                  }
+                  Update: {
+                    "acepta_contacto"?: boolean | null,"actualizado_en"?: string,"arriendo_anterior_id"?: string,"autorizo_datos_en"?: string | null,"canal"?: Database["public"]['Enums']["canal_referencia"],"canal_contacto"?: Database["public"]['Enums']["canal_contacto"] | null,"comentario"?: string | null,"contacto"?: string,"contacto_nombre"?: string,"creado_en"?: string,"entrego_buen_estado"?: boolean | null,"id"?: string,"nivel"?: Database["public"]['Enums']["nivel_referencia"] | null,"oculta"?: boolean,"pagaba_a_tiempo"?: boolean | null,"respondida_en"?: string | null,"soporte_path"?: string | null,"token_hash"?: string,"vence_en"?: string,"volveria_a_arrendar"?: boolean | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "referencias_arriendo_anterior_id_fkey"
+      columns: ["arriendo_anterior_id"]
+isOneToOne: false
+      referencedRelation: "arriendos_anteriores"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"usuarios": {
                   Row: {
                     "acepto_datos_en": string | null,"actualizado_en": string,"creado_en": string,"es_arrendador": boolean,"es_inquilino": boolean,"id": string,"nombre": string | null,"telefono": string | null
                   }
@@ -46,7 +250,7 @@ export type Database = {
             [_ in never]: never
           }
           Enums: {
-            [_ in never]: never
+            "canal_contacto": "telefono"|"whatsapp"|"correo","canal_referencia": "whatsapp"|"sms"|"correo","estado_contrato": "borrador"|"activo"|"terminado"|"cancelado","estado_pago": "pendiente"|"reportado"|"confirmado"|"rechazado","garantia_tipo": "codeudor"|"poliza"|"servicios_publicos","nivel_referencia": "declarada"|"con_soporte"|"verificada","tipo_inmueble": "apartamento"|"apartaestudio"|"casa"|"habitacion"|"local"|"otro","tipo_inventario": "entrega"|"devolucion"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -166,7 +370,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            
+            "canal_contacto": ["telefono", "whatsapp", "correo"],"canal_referencia": ["whatsapp", "sms", "correo"],"estado_contrato": ["borrador", "activo", "terminado", "cancelado"],"estado_pago": ["pendiente", "reportado", "confirmado", "rechazado"],"garantia_tipo": ["codeudor", "poliza", "servicios_publicos"],"nivel_referencia": ["declarada", "con_soporte", "verificada"],"tipo_inmueble": ["apartamento", "apartaestudio", "casa", "habitacion", "local", "otro"],"tipo_inventario": ["entrega", "devolucion"]
           }
         }
 } as const
