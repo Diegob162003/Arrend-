@@ -4,7 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { fechaFin, pasoClausulasSchema, pasoDatosSchema, pasoGarantiaSchema } from "@/lib/contrato";
+import {
+  fechaFin,
+  pasoClausulasSchema,
+  pasoDatosSchema,
+  pasoGarantiaSchema,
+  rutaFirmado,
+} from "@/lib/contrato";
 import { leerPesos } from "@/lib/formato";
 import type { TablesUpdate } from "@/lib/database.types";
 
@@ -144,4 +150,33 @@ export async function borrarBorrador(id: string, inmuebleId: string): Promise<{ 
 
   revalidatePath(`/inmuebles/${inmuebleId}`);
   redirect(`/inmuebles/${inmuebleId}`);
+}
+
+/**
+ * Después de subir el PDF firmado: comprueba que el archivo está en su lugar y
+ * deja el contrato vigente. Desde ahí la base no deja cambiar sus términos.
+ */
+export async function marcarFirmado(id: string): Promise<{ error?: string }> {
+  const supabase = await clienteConSesion();
+  const { data: auth } = await supabase.auth.getClaims();
+  const ruta = rutaFirmado(auth?.claims.sub ?? "", id);
+
+  const { data: archivos } = await supabase.storage
+    .from("contratos")
+    .list(ruta.slice(0, ruta.lastIndexOf("/")), { search: "firmado.pdf" });
+  if (!archivos?.some((archivo) => archivo.name === "firmado.pdf")) {
+    return { error: "No encontramos el PDF firmado. Súbelo de nuevo." };
+  }
+
+  const { data, error } = await supabase
+    .from("contratos")
+    .update({ estado: "activo", firmado_path: ruta })
+    .eq("id", id)
+    .eq("estado", "borrador")
+    .select("inmueble_id");
+  if (error || !data?.length) return { error: ERROR_GENERAL };
+
+  revalidatePath(`/contratos/${id}`);
+  revalidatePath(`/inmuebles/${data[0].inmueble_id}`);
+  return {};
 }

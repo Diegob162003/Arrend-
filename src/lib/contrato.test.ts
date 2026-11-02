@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   duracionMeses,
+  errorArchivoFirmado,
   fechaFin,
+  nombreArchivoContrato,
   pasoClausulasSchema,
   pasoDatosSchema,
   pasoGarantiaSchema,
@@ -124,5 +126,25 @@ describe("plantillaContrato", () => {
   it("numera las cláusulas en orden", () => {
     expect(contrato.clausulas[0].titulo).toBe("Primera. Objeto");
     expect(contrato.clausulas.at(-1)?.titulo).toBe("Undécima. Datos personales");
+  });
+
+  it("deja espacio para que firmen las partes y el codeudor", () => {
+    expect(contrato.firmas.map((f) => f.papel)).toEqual(["El arrendador", "El arrendatario", "El codeudor"]);
+    expect(contrato.firmas[1].nombre).toBe("Beto Gómez");
+    expect(contrato.cierre).toContain("en Bogotá");
+  });
+});
+
+describe("archivos del contrato", () => {
+  it("nombra el PDF a partir de la dirección, sin tildes ni símbolos", () => {
+    expect(nombreArchivoContrato("Calle 57 # 9-30, apto 402")).toBe("contrato-calle-57-9-30-apto-402.pdf");
+    expect(nombreArchivoContrato("Vía Engativá Nº 3")).toBe("contrato-via-engativa-n-3.pdf");
+    expect(nombreArchivoContrato("###")).toBe("contrato-arriendo.pdf");
+  });
+
+  it("solo acepta el firmado en PDF y de hasta 10 MB", () => {
+    expect(errorArchivoFirmado({ type: "application/pdf", size: 2_000_000 })).toBeNull();
+    expect(errorArchivoFirmado({ type: "image/jpeg", size: 2_000_000 })).toMatch(/PDF/);
+    expect(errorArchivoFirmado({ type: "application/pdf", size: 11 * 1024 * 1024 })).toMatch(/10 MB/);
   });
 });

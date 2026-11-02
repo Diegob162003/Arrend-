@@ -150,3 +150,37 @@ export const pasoClausulasSchema = z.object({
     })
     .transform((texto) => texto || null),
 });
+
+// ---------------------------------------------------------------------------
+// Archivos
+// ---------------------------------------------------------------------------
+
+/** "Calle 57 # 9-30, apto 402" → "contrato-calle-57-9-30-apto-402.pdf" */
+export function nombreArchivoContrato(direccion: string) {
+  const base = direccion
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60)
+    .replace(/-$/, "");
+  return `contrato-${base || "arriendo"}.pdf`;
+}
+
+/** Tope del bucket de contratos firmados (10 MB). */
+export const TAMANO_MAXIMO_FIRMADO = 10 * 1024 * 1024;
+
+/** Revisa el archivo antes de subirlo; el bucket aplica las mismas reglas. */
+export function errorArchivoFirmado(archivo: { type: string; size: number }) {
+  if (archivo.type !== "application/pdf") {
+    return "Sube el contrato en PDF. Si lo tienes en papel, escanéalo con la app de Google Drive o la cámara del celular.";
+  }
+  if (archivo.size > TAMANO_MAXIMO_FIRMADO) return "El PDF pesa más de 10 MB. Escanéalo en menor calidad.";
+  return null;
+}
+
+/** Ruta del contrato firmado en Storage; la base solo acepta esta. */
+export function rutaFirmado(arrendadorId: string, contratoId: string) {
+  return `${arrendadorId}/${contratoId}/firmado.pdf`;
+}

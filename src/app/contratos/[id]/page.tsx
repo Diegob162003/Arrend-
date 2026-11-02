@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Download, FileCheck } from "lucide-react";
 import { ConfirmarBorrado } from "@/components/confirmar-borrado";
 import { DocumentoContrato } from "@/components/documento-contrato";
 import { EncabezadoApp } from "@/components/encabezado-app";
 import { buttonVariants } from "@/components/ui/button";
 import { partirDireccion } from "@/app/inmuebles/direccion";
 import { getUsuario } from "@/lib/auth";
-import { datosDePlantilla, getContrato } from "@/lib/contratos";
+import { datosDePlantilla, getContrato, getUrlFirmado } from "@/lib/contratos";
 import { plantillaContrato } from "@/lib/plantilla-contrato";
 import { cn } from "@/lib/utils";
 import { borrarBorrador } from "../actions";
 import { NOMBRE_ESTADO_CONTRATO } from "../estado";
+import { SubirFirmado } from "./subir-firmado";
 
 export const metadata: Metadata = {
   title: "Contrato",
@@ -29,6 +31,7 @@ export default async function Contrato({ params }: PageProps<"/contratos/[id]">)
 
   const esBorrador = contrato.estado === "borrador";
   const documento = plantillaContrato(datosDePlantilla(contrato, usuario.nombre ?? ""));
+  const urlFirmado = await getUrlFirmado(contrato);
 
   return (
     <>
@@ -47,21 +50,61 @@ export default async function Contrato({ params }: PageProps<"/contratos/[id]">)
             </h1>
             <p className="mt-2 text-muted-foreground">{NOMBRE_ESTADO_CONTRATO[contrato.estado]}</p>
           </div>
-          {esBorrador && (
-            <Link
-              href={`/contratos/${contrato.id}/editar`}
+          <div className="flex flex-wrap gap-3">
+            {esBorrador && (
+              <Link
+                href={`/contratos/${contrato.id}/editar`}
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 px-5 text-base")}
+              >
+                Editar contrato
+              </Link>
+            )}
+            <a
+              href={`/contratos/${contrato.id}/pdf`}
+              download
               className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 px-5 text-base")}
             >
-              Editar contrato
-            </Link>
-          )}
+              <Download aria-hidden="true" />
+              Descargar PDF
+            </a>
+          </div>
         </div>
 
-        {esBorrador && (
-          <p className="mt-6 rounded-lg border-l-4 border-sello bg-muted p-4 text-sm">
-            Revisa el texto con calma. Pronto podrás descargarlo en PDF, enviarlo al inquilino y subir el
-            contrato firmado. La plantilla está en revisión con un abogado.
-          </p>
+        {esBorrador ? (
+          <section
+            aria-labelledby="firma-titulo"
+            className="mt-6 rounded-lg border-l-4 border-sello bg-muted p-5"
+          >
+            <h2 id="firma-titulo" className="text-xl font-bold">
+              Para firmarlo
+            </h2>
+            <ol className="mt-3 list-decimal space-y-1 pl-5">
+              <li>Revisa el texto con calma y descarga el PDF.</li>
+              <li>
+                Imprímanlo y fírmenlo{contrato.garantia_tipo === "codeudor" ? ", con el codeudor" : ""}.
+              </li>
+              <li>Escanéalo en PDF y súbelo. El contrato queda vigente y ya no se puede editar.</li>
+            </ol>
+            <p className="mt-3 mb-5 text-sm text-muted-foreground">
+              La plantilla está en revisión con un abogado.
+            </p>
+            <SubirFirmado arrendadorId={usuario.id} contratoId={contrato.id} />
+          </section>
+        ) : (
+          urlFirmado && (
+            <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-accent p-4 text-accent-foreground">
+              <FileCheck aria-hidden="true" className="size-5 shrink-0" />
+              <span>Este contrato ya está firmado y sus términos no cambian.</span>
+              <a
+                href={urlFirmado}
+                className="font-medium underline underline-offset-4"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver el contrato firmado
+              </a>
+            </p>
+          )
         )}
 
         <DocumentoContrato contrato={documento} className="mt-8" />

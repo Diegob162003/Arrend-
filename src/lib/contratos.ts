@@ -12,7 +12,7 @@ export async function getContrato(id: string) {
     .from("contratos")
     .select(
       `id, arrendador_id, inquilino_id, inquilino_nombre, inquilino_correo, fecha_inicio, fecha_fin,
-       canon, dia_pago, garantia_tipo, estado, clausulas_adicionales,
+       canon, dia_pago, garantia_tipo, estado, clausulas_adicionales, firmado_path,
        inmuebles (id, direccion, ciudad, tipo)`,
     )
     .eq("id", id)
@@ -41,4 +41,14 @@ export function datosDePlantilla(contrato: Contrato, arrendadorNombre: string): 
     garantia: (contrato.garantia_tipo ?? "ninguna") as Garantia,
     clausulasAdicionales: contrato.clausulas_adicionales,
   };
+}
+
+/** URL firmada del contrato escaneado, válida por una hora. */
+export async function getUrlFirmado(contrato: Contrato) {
+  if (!contrato.firmado_path) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.storage
+    .from("contratos")
+    .createSignedUrl(contrato.firmado_path, 60 * 60, { download: "contrato-firmado.pdf" });
+  return data?.signedUrl ?? null;
 }

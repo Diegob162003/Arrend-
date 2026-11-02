@@ -105,9 +105,29 @@ test("una persona nueva crea su cuenta con el código del correo", async ({ page
   await expect(page.getByText("UN MILLÓN OCHOCIENTOS MIL PESOS", { exact: false })).toBeVisible();
   await expect(page.getByText("Se permite una mascota pequeña.")).toBeVisible();
 
+  // Descarga el PDF para firmarlo y sube el escaneado: el contrato queda vigente.
+  const descarga = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Descargar PDF" }).click();
+  expect((await descarga).suggestedFilename()).toBe("contrato-calle-57-9-30-apto-402.pdf");
+  const pdf = await (await page.request.get(page.url() + "/pdf")).body();
+  expect(pdf.subarray(0, 5).toString()).toBe("%PDF-");
+
+  await page
+    .getByLabel("Subir contrato firmado")
+    .setInputFiles({ name: "foto.png", mimeType: "image/png", buffer: PNG });
+  await expect(page.getByText("Sube el contrato en PDF.")).toBeVisible();
+
+  await page
+    .getByLabel("Subir contrato firmado")
+    .setInputFiles({ name: "firmado.pdf", mimeType: "application/pdf", buffer: pdf });
+  await expect(page.getByText("Este contrato ya está firmado")).toBeVisible();
+  await expect(page.getByText("Vigente", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ver el contrato firmado" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Editar contrato" })).toHaveCount(0);
+
   await page.getByRole("link", { name: "Calle 57 # 9-30" }).click();
   await page.getByRole("link", { name: "Tus inmuebles" }).click();
-  await expect(page.getByText("Contrato en borrador")).toBeVisible();
+  await expect(page.getByText("Arrendado", { exact: true })).toBeVisible();
 
   await page.getByRole("button", { name: "Cerrar sesión" }).click();
   await expect(page).toHaveURL("/");

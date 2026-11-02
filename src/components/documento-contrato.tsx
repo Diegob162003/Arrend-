@@ -1,14 +1,8 @@
-import type { plantillaContrato } from "@/lib/plantilla-contrato";
+import type { TextoContrato } from "@/lib/plantilla-contrato";
 import { cn } from "@/lib/utils";
 
 /** El contrato como se va a firmar: una hoja con las cláusulas en orden. */
-export function DocumentoContrato({
-  contrato,
-  className,
-}: {
-  contrato: ReturnType<typeof plantillaContrato>;
-  className?: string;
-}) {
+export function DocumentoContrato({ contrato, className }: { contrato: TextoContrato; className?: string }) {
   return (
     <article
       className={cn(
@@ -32,6 +26,16 @@ export function DocumentoContrato({
           </li>
         ))}
       </ol>
+      <p className="mx-auto mt-8 max-w-prose leading-relaxed">{contrato.cierre}</p>
+      <ul className="mx-auto mt-12 grid max-w-prose gap-x-10 gap-y-12 sm:grid-cols-2">
+        {contrato.firmas.map((firma) => (
+          <li key={firma.papel} className="border-t border-foreground pt-2 text-sm">
+            <p className="font-bold uppercase">{firma.papel}</p>
+            <p>{firma.nombre ?? "Nombre:"}</p>
+            <p className="text-muted-foreground">C.C.</p>
+          </li>
+        ))}
+      </ul>
     </article>
   );
 }

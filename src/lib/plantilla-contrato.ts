@@ -20,6 +20,11 @@ export type DatosContrato = {
 
 export type Clausula = { titulo: string; texto: string[] };
 
+/** Un espacio para firmar. El codeudor no tiene nombre en la app: se escribe a mano. */
+export type Firma = { papel: string; nombre: string | null };
+
+export type TextoContrato = ReturnType<typeof plantillaContrato>;
+
 const ORDINALES = [
   "Primera",
   "Segunda",
@@ -133,9 +138,17 @@ export function plantillaContrato(datos: DatosContrato) {
     });
   }
 
+  const firmas: Firma[] = [
+    { papel: "El arrendador", nombre: datos.arrendadorNombre },
+    { papel: "El arrendatario", nombre: datos.inquilinoNombre },
+  ];
+  if (datos.garantia === "codeudor") firmas.push({ papel: "El codeudor", nombre: null });
+
   return {
     titulo: "Contrato de arrendamiento de vivienda urbana",
     encabezado: `Entre ${datos.arrendadorNombre}, quien en adelante se llama el ARRENDADOR, y ${datos.inquilinoNombre}, quien en adelante se llama el ARRENDATARIO, se celebra el presente contrato de arrendamiento de vivienda urbana, que se rige por la Ley 820 de 2003 y por las siguientes cláusulas:`,
     clausulas: clausulas.map(({ nombre, texto }, i) => ({ titulo: `${ORDINALES[i]}. ${nombre}`, texto })),
+    cierre: `Las partes leen y aceptan este contrato, y lo firman en ${datos.ciudad} el día ____ del mes de ______________ de ______.`,
+    firmas,
   };
 }
