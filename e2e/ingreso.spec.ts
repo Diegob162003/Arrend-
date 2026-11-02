@@ -3,6 +3,12 @@ import { expect, test } from "@playwright/test";
 // Mailpit de Supabase local recibe los correos de ingreso.
 const MAILPIT = "http://127.0.0.1:54324";
 
+// Imagen PNG de 4×4 píxeles en verde tinta para probar la subida de fotos.
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAEElEQVR4nGPg97GCIwbiOADvpAlRZ1cRnQAAAABJRU5ErkJggg==",
+  "base64",
+);
+
 async function codigoDelCorreo(correo: string) {
   for (let intento = 0; intento < 20; intento++) {
     const res = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${correo}`)}`);
@@ -60,6 +66,28 @@ test("una persona nueva crea su cuenta con el código del correo", async ({ page
   await expect(page.getByRole("heading", { name: "Hola, Ana" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tus inmuebles" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tu arriendo" })).toBeVisible();
+
+  // Registra su primer inmueble con una foto.
+  await page.getByRole("link", { name: "Agregar inmueble" }).click();
+  await page.getByRole("button", { name: "Guardar inmueble" }).click();
+  await expect(page.getByText("Elige qué tipo de inmueble es.")).toBeVisible();
+
+  await page.getByLabel("Dirección").fill("Calle 57 # 9-30, apto 402");
+  await page.getByLabel("Ciudad o municipio").fill("Bogotá");
+  await page.getByText("Apartamento", { exact: true }).click();
+  await page.getByLabel("Canon mensual").fill("1800000");
+  await page.getByRole("button", { name: "Guardar inmueble" }).click();
+
+  await expect(page.getByRole("heading", { name: "Calle 57 # 9-30" })).toBeVisible();
+  await expect(page.getByText("apto 402, Bogotá")).toBeVisible();
+
+  await page
+    .getByLabel("Agregar fotos")
+    .setInputFiles({ name: "sala.png", mimeType: "image/png", buffer: PNG });
+  await expect(page.getByRole("img", { name: "Foto 1 del inmueble" })).toBeVisible();
+
+  await page.getByRole("link", { name: "Tus inmuebles" }).click();
+  await expect(page.getByText("Disponible")).toBeVisible();
 
   await page.getByRole("button", { name: "Cerrar sesión" }).click();
   await expect(page).toHaveURL("/");

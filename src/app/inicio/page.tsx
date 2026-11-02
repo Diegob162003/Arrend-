@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Marca } from "@/components/marca";
+import { EncabezadoApp } from "@/components/encabezado-app";
+import { buttonVariants } from "@/components/ui/button";
 import { getUsuario } from "@/lib/auth";
-import { cerrarSesion } from "./actions";
+import { getInmuebles } from "@/lib/inmuebles";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Mi panel",
@@ -15,17 +17,11 @@ export default async function Panel() {
   if (!usuario.completo) redirect("/bienvenida");
 
   const primerNombre = usuario.nombre?.split(" ")[0];
+  const inmuebles = usuario.esArrendador ? await getInmuebles() : [];
 
   return (
     <>
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5 sm:px-8">
-        <Marca />
-        <form action={cerrarSesion}>
-          <Button type="submit" variant="ghost" size="lg" className="h-11 px-4 text-base">
-            Cerrar sesión
-          </Button>
-        </form>
-      </header>
+      <EncabezadoApp />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-16 sm:px-8">
         <h1 className="text-4xl font-bold tracking-tight">Hola, {primerNombre}</h1>
@@ -35,8 +31,21 @@ export default async function Panel() {
           {usuario.esArrendador && (
             <Seccion
               titulo="Tus inmuebles"
-              texto="Aquí vas a registrar tus inmuebles, crear contratos y ver los pagos del mes. Estamos terminando esta parte."
-            />
+              texto={
+                inmuebles.length === 0
+                  ? "Registra tu primer inmueble para crear su contrato y llevar los pagos."
+                  : inmuebles.length === 1
+                    ? "Tienes 1 inmueble registrado."
+                    : `Tienes ${inmuebles.length} inmuebles registrados.`
+              }
+            >
+              <Link
+                href={inmuebles.length === 0 ? "/inmuebles/nuevo" : "/inmuebles"}
+                className={cn(buttonVariants({ size: "lg" }), "mt-5 h-11 px-5 text-base")}
+              >
+                {inmuebles.length === 0 ? "Agregar inmueble" : "Ver inmuebles"}
+              </Link>
+            </Seccion>
           )}
           {usuario.esInquilino && (
             <Seccion
@@ -50,11 +59,12 @@ export default async function Panel() {
   );
 }
 
-function Seccion({ titulo, texto }: { titulo: string; texto: string }) {
+function Seccion({ titulo, texto, children }: { titulo: string; texto: string; children?: React.ReactNode }) {
   return (
     <section className="rounded-xl border border-border bg-card p-6">
       <h2 className="text-2xl font-bold">{titulo}</h2>
       <p className="mt-2 text-muted-foreground">{texto}</p>
+      {children}
     </section>
   );
 }

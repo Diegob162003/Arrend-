@@ -26,6 +26,46 @@ export const bienvenidaSchema = z.object({
 
 export type BienvenidaInput = z.infer<typeof bienvenidaSchema>;
 
+export const TIPOS_INMUEBLE = [
+  "apartamento",
+  "apartaestudio",
+  "casa",
+  "habitacion",
+  "local",
+  "otro",
+] as const;
+
+export const NOMBRE_TIPO_INMUEBLE: Record<(typeof TIPOS_INMUEBLE)[number], string> = {
+  apartamento: "Apartamento",
+  apartaestudio: "Apartaestudio",
+  casa: "Casa",
+  habitacion: "Habitación",
+  local: "Local",
+  otro: "Otro",
+};
+
+export const inmuebleSchema = z.object({
+  direccion: z
+    .string()
+    .trim()
+    .min(5, "Escribe la dirección completa, por ejemplo: Calle 57 # 9-30, apto 402.")
+    .max(200, "La dirección es muy larga."),
+  ciudad: z.string().trim().min(2, "Escribe la ciudad o el municipio.").max(80, "El nombre es muy largo."),
+  tipo: z.enum(TIPOS_INMUEBLE, "Elige qué tipo de inmueble es."),
+  canonBase: z
+    .number("Escribe el canon en pesos, solo números.")
+    .int()
+    .min(50_000, "El canon debe ser de al menos $ 50.000.")
+    .max(1_000_000_000, "Revisa el canon: parece demasiado alto."),
+  notas: z
+    .string()
+    .trim()
+    .max(1000, "Las notas pueden tener hasta 1.000 caracteres.")
+    .transform((texto) => texto || null),
+});
+
+export type InmuebleInput = z.infer<typeof inmuebleSchema>;
+
 /** Convierte el rol elegido en las dos banderas de la tabla usuarios. */
 export function rolABanderas(rol: (typeof ROLES)[number]) {
   return {
