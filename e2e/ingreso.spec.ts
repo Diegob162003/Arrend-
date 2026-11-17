@@ -125,6 +125,11 @@ test("una persona nueva crea su cuenta con el código del correo", async ({ page
   await expect(page.getByRole("link", { name: "Ver el contrato firmado" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Editar contrato" })).toHaveCount(0);
 
+  // Al quedar vigente aparece la libreta de pagos, un renglón por mes.
+  await expect(page.getByRole("heading", { name: "Pagos" })).toBeVisible();
+  await expect(page.getByRole("table", { name: "Calendario de pagos, un renglón por mes" })).toBeVisible();
+  expect(await page.getByRole("table").locator("tbody tr").count()).toBeGreaterThan(0);
+
   await page.getByRole("link", { name: "Calle 57 # 9-30" }).click();
   await page.getByRole("link", { name: "Tus inmuebles" }).click();
   await expect(page.getByText("Arrendado", { exact: true })).toBeVisible();
