@@ -47,9 +47,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # La misma versión del CLI que fija package.json: "latest" puede traer una versión mayor nueva.
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.122.0
       - run: supabase start -x studio,imgproxy,vector,logflare,realtime,edge-runtime,supavisor
       - name: Pruebas de políticas RLS (pgTAP)
         run: supabase test db
