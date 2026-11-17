@@ -53,15 +53,20 @@ insert into public.contratos
 values
   ('20000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000001',
    'a0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000002',
-   'Beto Gómez', 'beto@prueba.co', '2026-08-01', '2027-07-31', 1800000, 5, 'codeudor', 'activo'),
+   'Beto Gómez', 'beto@prueba.co', '2026-08-01', '2027-07-31', 1800000, 5, 'codeudor', 'borrador'),
   ('20000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000003',
    'c0000000-0000-4000-8000-000000000003', 'd0000000-0000-4000-8000-000000000004',
-   'Dani Torres', 'dani@prueba.co', '2026-09-01', '2027-08-31', 1300000, 1, 'poliza', 'activo'),
+   'Dani Torres', 'dani@prueba.co', '2026-09-01', '2027-08-31', 1300000, 1, 'poliza', 'borrador'),
   -- Borrador de Ana todavía sin inquilino.
   ('20000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000002',
    'a0000000-0000-4000-8000-000000000001', null,
    'Laura Martínez', null, '2026-12-01', '2027-11-30', 1200000, 10, 'servicios_publicos', 'borrador');
 
+-- Al quedar vigentes se genera su calendario de pagos, como cuando se sube el firmado.
+update public.contratos set estado = 'activo'
+ where id in ('20000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000002');
+
+-- Los pagos que ya se hicieron o se reportaron.
 insert into public.pagos
   (contrato_id, periodo, valor, fecha_limite, fecha_pago, estado, confirmado_en, extraido_ia)
 values
@@ -71,7 +76,12 @@ values
    '{"valor": 1800000, "fecha": "2026-10-03", "referencia": "M123456", "confianza": 0.94}'),
   ('20000000-0000-4000-8000-000000000001', '2026-11-01', 1800000, '2026-11-05', null, 'pendiente', null, null),
   ('20000000-0000-4000-8000-000000000002', '2026-09-01', 1300000, '2026-09-01', '2026-09-01', 'confirmado', '2026-09-01 18:00-05', null),
-  ('20000000-0000-4000-8000-000000000002', '2026-10-01', 1300000, '2026-10-01', null, 'pendiente', null, null);
+  ('20000000-0000-4000-8000-000000000002', '2026-10-01', 1300000, '2026-10-01', null, 'pendiente', null, null)
+on conflict (contrato_id, periodo) do update
+  set fecha_pago = excluded.fecha_pago,
+      estado = excluded.estado,
+      confirmado_en = excluded.confirmado_en,
+      extraido_ia = excluded.extraido_ia;
 
 insert into public.inventarios (id, contrato_id, tipo, aceptado_arrendador_en, aceptado_inquilino_en) values
   ('30000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', 'entrega',

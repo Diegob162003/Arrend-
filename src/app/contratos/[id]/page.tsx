@@ -8,11 +8,13 @@ import { EncabezadoApp } from "@/components/encabezado-app";
 import { buttonVariants } from "@/components/ui/button";
 import { partirDireccion } from "@/app/inmuebles/direccion";
 import { getUsuario } from "@/lib/auth";
-import { datosDePlantilla, getContrato, getUrlFirmado } from "@/lib/contratos";
+import { datosDePlantilla, getContrato, getPagos, getUrlFirmado } from "@/lib/contratos";
+import { hoyEnColombia } from "@/lib/pagos";
 import { plantillaContrato } from "@/lib/plantilla-contrato";
 import { cn } from "@/lib/utils";
 import { borrarBorrador } from "../actions";
 import { NOMBRE_ESTADO_CONTRATO } from "../estado";
+import { CalendarioPagos } from "./calendario-pagos";
 import { SubirFirmado } from "./subir-firmado";
 
 export const metadata: Metadata = {
@@ -31,7 +33,10 @@ export default async function Contrato({ params }: PageProps<"/contratos/[id]">)
 
   const esBorrador = contrato.estado === "borrador";
   const documento = plantillaContrato(datosDePlantilla(contrato, usuario.nombre ?? ""));
-  const urlFirmado = await getUrlFirmado(contrato);
+  const [urlFirmado, pagos] = await Promise.all([
+    getUrlFirmado(contrato),
+    esBorrador ? [] : getPagos(contrato.id),
+  ]);
 
   return (
     <>
@@ -106,6 +111,8 @@ export default async function Contrato({ params }: PageProps<"/contratos/[id]">)
             </p>
           )
         )}
+
+        {!esBorrador && <CalendarioPagos pagos={pagos} hoy={hoyEnColombia()} />}
 
         <DocumentoContrato contrato={documento} className="mt-8" />
 

@@ -52,3 +52,18 @@ export async function getUrlFirmado(contrato: Contrato) {
     .createSignedUrl(contrato.firmado_path, 60 * 60, { download: "contrato-firmado.pdf" });
   return data?.signedUrl ?? null;
 }
+
+/** Calendario de pagos del contrato, en orden. RLS deja verlo solo a las partes. */
+export async function getPagos(contratoId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("pagos")
+    .select("id, periodo, valor, fecha_limite, fecha_pago, estado")
+    .eq("contrato_id", contratoId)
+    .order("periodo", { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
+export type Pago = Awaited<ReturnType<typeof getPagos>>[number];
